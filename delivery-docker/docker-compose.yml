@@ -1,32 +1,94 @@
 version: "3.9"
 
+networks:
+  kafka-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.35.0.0/16
+        
 services:
   mariadb:
     image: mariadb:11.8
     container_name: mariadb
     restart: unless-stopped
-
+    networks:     
+      - kafka-net
     environment:
       MARIADB_ROOT_PASSWORD: root1234
       MARIADB_DATABASE: delivery
       MARIADB_USER: delivery
       MARIADB_PASSWORD: delivery1234
-
     ports:
       - "33060:3306"
-
     volumes:
       - mariadb_data:/var/lib/mysql
-
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
       interval: 10s
       timeout: 5s
       retries: 5
+      
+  kafka01:
+    build:
+      context: ./rocky
+    container_name: kafka-kraft-01
+    networks:
+      kafka-net:
+        ipv4_address: 172.35.0.11
+    ports:
+      - "19092:9092"
+      - "19094:9094"
+      - "2222:22"
+    volumes:
+      - ./volumes/kafka01/config:/data/kafka/config
+      - ./volumes/kafka01/data:/tmp/kafka-logs
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          
+  kafka02:
+    build:
+      context: ./rocky
+    container_name: kafka-kraft-02
+    networks:
+      kafka-net:
+        ipv4_address: 172.35.0.12
+    ports:
+      - "29092:9092"
+      - "29094:9094"
+      - "2223:22"
+    volumes:
+      - ./volumes/kafka02/config:/data/kafka/config
+      - ./volumes/kafka02/data:/tmp/kafka-logs
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+
+  kafka03:
+    build:
+      context: ./rocky
+    container_name: kafka-kraft-03
+    networks:
+      kafka-net:
+        ipv4_address: 172.35.0.13
+    ports:
+      - "39092:9092"
+      - "39094:9094"
+      - "2224:22"
+    volumes:
+      - ./volumes/kafka03/config:/data/kafka/config
+      - ./volumes/kafka03/data:/tmp/kafka-logs
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+
 
 volumes:
   mariadb_data:
