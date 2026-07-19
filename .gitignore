@@ -1,0 +1,3 @@
+delivery-docker/volumes/kafka01/data/
+delivery-docker/volumes/kafka02/data/
+delivery-docker/volumes/kafka03/data/
