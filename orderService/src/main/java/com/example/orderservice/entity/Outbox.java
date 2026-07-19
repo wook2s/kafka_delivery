@@ -33,9 +33,16 @@ public class Outbox {
     @Column(nullable = false)
     private OutboxStatus status;
 
+    @Column(nullable = false)
     private String createId;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private String updateId;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     public static Outbox createOutbox(Order order, String payload) {
