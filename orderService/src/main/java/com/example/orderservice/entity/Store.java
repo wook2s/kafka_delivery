@@ -12,10 +12,18 @@ public class Store {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String storeName;
 
+    @Column(nullable = false)
     private String createId;
+
+    @Column(nullable = false)
     private Timestamp createdAt;
+
+    @Column(nullable = false)
     private String updateId;
+
+    @Column(nullable = false)
     private Timestamp updatedAt;
 }
