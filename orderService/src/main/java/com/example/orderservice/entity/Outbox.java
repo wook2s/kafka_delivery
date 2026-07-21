@@ -48,11 +48,11 @@ public class Outbox {
     public static Outbox createOutbox(Order order, String payload) {
         Outbox outbox = new Outbox();
         outbox.setOrderId(order.getId());
-        outbox.setEventId(UUID.randomUUID());
+        outbox.setEventId(order.getEventId());
         outbox.setStatus(OutboxStatus.READY);
-        outbox.setCreateId("ORDER-API");
+        outbox.setCreateId("ORDER_SERVICE");
         outbox.setCreatedAt(LocalDateTime.now());
-        outbox.setUpdateId("ORDER-API");
+        outbox.setUpdateId("ORDER_SERVICE");
         outbox.setUpdatedAt(LocalDateTime.now());
 
         outbox.setPayload(payload);
@@ -63,6 +63,7 @@ public class Outbox {
     public void publishComplete() {
         this.status = OutboxStatus.PUBLISHED;
         this.updatedAt = LocalDateTime.now();
+        this.updateId = "ORDER_SERVICE";
     }
 
     public void publishFail() {
