@@ -25,9 +25,7 @@ public class OutboxProducerScheduler {
     @Transactional
     public void publishEvent(){
         List<Outbox> outboxes = outboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.READY);
-        if(outboxes.size() > 0) {
-            log.info("scheduler works size : {}", outboxes.size());
-        } else {
+        if(outboxes.isEmpty()) {
             return;
         }
         for(Outbox outbox : outboxes) {

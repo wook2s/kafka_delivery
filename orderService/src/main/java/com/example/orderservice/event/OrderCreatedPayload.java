@@ -17,6 +17,7 @@ public class OrderCreatedPayload {
     private Long orderId;
     private Long userId;
     private Long storeId;
+    private String address;
     private List<OrderItem> items;
 
     public static OrderCreatedPayload from(Order order) {
@@ -25,6 +26,7 @@ public class OrderCreatedPayload {
         payload.setUserId(order.getUserId());
         payload.setStoreId(order.getStoreId());
         payload.setItems(order.getItems());
+        payload.setAddress(order.getAddress());
 
         return payload;
     }

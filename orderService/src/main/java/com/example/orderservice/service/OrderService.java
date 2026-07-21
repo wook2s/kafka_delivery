@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -31,5 +33,11 @@ public class OrderService {
         outboxRepository.save(outbox);
 
         return savedOrder.getId();
+    }
+
+    @Transactional
+    public void orderAccepted(UUID eventId) {
+        Order order = orderRepository.findByEventId(eventId);
+        order.accepted();
     }
 }
