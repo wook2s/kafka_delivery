@@ -1,9 +1,11 @@
 package com.example.orderservice.entity;
 
-public enum OrderStatus {
+public enum DeliveryStatus {
+    PENDING,
     REQUESTED,
     ACCEPTED,
     REJECTED,
     CANCELED,
+    DELIVERING,
     COMPLETED
 }

@@ -40,6 +40,10 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DeliveryStatus deliveryStatus;
+
     @OneToMany(
             mappedBy = "order",
             cascade = CascadeType.ALL
@@ -72,6 +76,7 @@ public class Order {
         order.setAddress(dto.getAddress());
         order.setStoreId(dto.getStoreId());
         order.setStatus(OrderStatus.REQUESTED);
+        order.setDeliveryStatus(DeliveryStatus.PENDING);
         order.setCreateId("ORDER_SERVICE");
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdateId("ORDER_SERVICE");
