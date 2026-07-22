@@ -1,4 +1,4 @@
-package com.example.storeservice.kafka.producer;
+package com.example.storeservice.scheduler;
 
 import com.example.storeservice.service.OutboxService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OutboxProducerScheduler {
+public class OutboxProduceScheduler {
 
     private final OutboxService outboxService;
 

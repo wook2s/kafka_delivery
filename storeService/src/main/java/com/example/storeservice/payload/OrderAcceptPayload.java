@@ -1,4 +1,4 @@
-package com.example.storeservice.event;
+package com.example.storeservice.payload;
 
 import com.example.storeservice.entity.Order;
 import com.example.storeservice.entity.OrderItem;
@@ -11,15 +11,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class OrderWaitingPayload {
+public class OrderAcceptPayload {
     private Long orderId;
     private Long userId;
     private Long storeId;
     private String address;
     private List<OrderItem> items;
 
-    public static OrderWaitingPayload from(Order order) {
-        OrderWaitingPayload payload = new OrderWaitingPayload();
+    public static OrderAcceptPayload from(Order order) {
+        OrderAcceptPayload payload = new OrderAcceptPayload();
         payload.setOrderId(order.getId());
         payload.setUserId(order.getUserId());
         payload.setStoreId(order.getStoreId());
