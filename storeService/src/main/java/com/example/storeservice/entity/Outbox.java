@@ -25,7 +25,10 @@ public class Outbox {
     private UUID eventId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String payload;
+    private String orderPayload;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String deliveryPayload;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,7 +46,7 @@ public class Outbox {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static Outbox createOutbox(Order order, String payload) {
+    public static Outbox createOutbox(Order order, String orderPayload, String deliveryPayload) {
         Outbox outbox = new Outbox();
         outbox.setOrderId(order.getId());
         outbox.setEventId(order.getEventId());
@@ -53,8 +56,8 @@ public class Outbox {
         outbox.setUpdateId("STORE_SERVICE");
         outbox.setUpdatedAt(LocalDateTime.now());
 
-        outbox.setPayload(payload);
-
+        outbox.setOrderPayload(orderPayload);
+        outbox.setDeliveryPayload(deliveryPayload);
         return outbox;
     }
 

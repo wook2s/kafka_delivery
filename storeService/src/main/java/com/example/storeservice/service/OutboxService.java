@@ -20,15 +20,13 @@ public class OutboxService {
     private final OutboxProducer outboxProducer;
     private final OutboxRepository outboxRepository;
 
-    @Transactional
+    @Transactional("transactionManager")
     public void produceOutbox() {
         List<Outbox> outboxes = outboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.READY);
-        if(outboxes.isEmpty()) {
-            return;
-        }
         for(Outbox outbox : outboxes) {
             try {
-                outboxProducer.produce(outbox.getEventId().toString(), outbox.getPayload());
+//                outboxProducer.produce(outbox.getEventId().toString(), outbox.getPayload());
+                outboxProducer.produceAcceptAndDelivery(outbox.getEventId().toString(), outbox.getOrderPayload(), outbox.getDeliveryPayload());
                 outbox.publishComplete();
             } catch (Exception  e) {
                 outbox.publishFail();

@@ -12,9 +12,18 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class OutboxProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final static String TOPIC = "order-accepted";
+    private final static String ORDER_ACCEPT_TOPIC = "order-accepted";
+    private final static String DELIVERY_REQUEST_TOPIC = "delivery-requested";
 
     public void produce(String key, String message) throws ExecutionException, InterruptedException {
-        kafkaTemplate.send(TOPIC, key, message).get();
+        kafkaTemplate.send(ORDER_ACCEPT_TOPIC, key, message).get();
+    }
+
+    public void produceAcceptAndDelivery(String key, String orderPayload, String deliveryPayload) throws ExecutionException, InterruptedException {
+        kafkaTemplate.executeInTransaction(operations -> {
+            operations.send(ORDER_ACCEPT_TOPIC, key, orderPayload);
+            operations.send(DELIVERY_REQUEST_TOPIC, key, deliveryPayload);
+            return true;
+        });
     }
 }

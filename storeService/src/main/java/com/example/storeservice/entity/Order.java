@@ -1,6 +1,6 @@
 package com.example.storeservice.entity;
 
-import com.example.storeservice.event.OrderWaitingPayload;
+import com.example.storeservice.payload.OrderAcceptPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +37,10 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DeliveryStatus deliveryStatus;
+
     @OneToMany(
             mappedBy = "order",
             cascade = CascadeType.ALL
@@ -61,13 +65,14 @@ public class Order {
         item.setOrder(this);
     }
 
-    public static Order createOrderFromWaitingPayload(UUID eventId, OrderWaitingPayload payload) {
+    public static Order createOrderFromWaitingPayload(UUID eventId, OrderAcceptPayload payload) {
         Order order = new Order();
         order.setEventId(eventId);
         order.setUserId(payload.getUserId());
         order.setAddress(payload.getAddress());
         order.setStoreId(payload.getStoreId());
         order.setStatus(OrderStatus.REQUESTED);
+        order.setDeliveryStatus(DeliveryStatus.PENDING);
         order.setCreateId("STORE_SERVICE");
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdateId("STORE_SERVICE");
