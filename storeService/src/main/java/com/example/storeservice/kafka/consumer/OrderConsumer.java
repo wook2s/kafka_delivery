@@ -1,11 +1,7 @@
 package com.example.storeservice.kafka.consumer;
 
 import com.example.storeservice.entity.Order;
-import com.example.storeservice.entity.OrderStatus;
-import com.example.storeservice.entity.Outbox;
-import com.example.storeservice.event.OrderWaitingPayload;
-import com.example.storeservice.repository.OrderRepository;
-import com.example.storeservice.repository.OutboxRepository;
+import com.example.storeservice.payload.OrderAcceptPayload;
 import com.example.storeservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +11,8 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -33,13 +27,8 @@ public class OrderConsumer {
     public void consumeOrder(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String json) {
         log.info("consume key : {}, json : {}", eventId, json);
 
-        OrderWaitingPayload payload = objectMapper.readValue(json, OrderWaitingPayload.class);
+        OrderAcceptPayload payload = objectMapper.readValue(json, OrderAcceptPayload.class);
         Order order = Order.createOrderFromWaitingPayload(UUID.fromString(eventId), payload);
         orderService.saveOrder(order);
-    }
-
-    @Scheduled(fixedDelay = 3000)
-    public void acceptOrders() {
-        orderService.acceptOrders();
     }
 }

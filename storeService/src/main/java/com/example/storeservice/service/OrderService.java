@@ -3,7 +3,8 @@ package com.example.storeservice.service;
 import com.example.storeservice.entity.Order;
 import com.example.storeservice.entity.OrderStatus;
 import com.example.storeservice.entity.Outbox;
-import com.example.storeservice.event.OrderWaitingPayload;
+import com.example.storeservice.payload.DeliveryRequestPayload;
+import com.example.storeservice.payload.OrderAcceptPayload;
 import com.example.storeservice.repository.OrderRepository;
 import com.example.storeservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,15 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     public void acceptOrders() {
         List<Order> orders = orderRepository.findTop30ByStatusOrderByCreatedAtAsc(OrderStatus.REQUESTED);
 
         List<Outbox> outboxes = orders.stream().map(order -> {
-            OrderWaitingPayload payload = OrderWaitingPayload.from(order);
-            return Outbox.createOutbox(order, objectMapper.writeValueAsString(payload));
+            OrderAcceptPayload orderPayload = OrderAcceptPayload.from(order);
+            DeliveryRequestPayload deliveryPayload = DeliveryRequestPayload.from(order);
+
+            return Outbox.createOutbox(order, objectMapper.writeValueAsString(orderPayload), objectMapper.writeValueAsString(deliveryPayload));
         }).toList();
 
         for (Order order : orders) {
