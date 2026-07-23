@@ -1,4 +1,4 @@
-package com.example.storeservice.scheduler.accept;
+package com.example.storeservice.scheduler.prepared;
 
 import com.example.storeservice.service.OutboxService;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AcceptProduceScheduler {
+public class PrepareProduceScheduler {
 
     private final OutboxService outboxService;
 
     @Scheduled(fixedDelay = 1000)
-    public void acceptProduce() {
-        outboxService.acceptProduce();
+    public void prepareProduce() {
+        outboxService.prepareProduce();
     }
 }

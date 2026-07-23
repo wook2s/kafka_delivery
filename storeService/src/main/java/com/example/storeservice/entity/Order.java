@@ -93,4 +93,28 @@ public class Order {
         this.updatedAt = LocalDateTime.now();
         this.updateId = "STORE_SERVICE";
     }
+
+    public void prepared() {
+        this.status = OrderStatus.PREPARED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "STORE_SERVICE";
+    }
+
+    public void deliveryStoreArrived() {
+        this.deliveryStatus = DeliveryStatus.STORE_ARRIVED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "STORE_SERVICE";
+    }
+
+    public void deliveryStarted() {
+        this.deliveryStatus = DeliveryStatus.DELIVERING;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "STORE_SERVICE";
+    }
+
+    public void completed() {
+        this.deliveryStatus = DeliveryStatus.COMPLETED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "STORE_SERVICE";
+    }
 }

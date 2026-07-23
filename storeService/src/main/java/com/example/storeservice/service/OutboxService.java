@@ -2,8 +2,7 @@ package com.example.storeservice.service;
 
 import com.example.storeservice.entity.Outbox;
 import com.example.storeservice.entity.OutboxStatus;
-import com.example.storeservice.kafka.producer.OutboxProducer;
-import com.example.storeservice.repository.OrderRepository;
+import com.example.storeservice.kafka.producer.KafkaProducer;
 import com.example.storeservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +16,28 @@ import java.util.List;
 @Slf4j
 public class OutboxService {
 
-    private final OutboxProducer outboxProducer;
+    private final KafkaProducer kafkaProducer;
     private final OutboxRepository outboxRepository;
 
-    @Transactional("transactionManager")
-    public void produceOutbox() {
-        List<Outbox> outboxes = outboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.READY);
+    @Transactional
+    public void acceptProduce() {
+        List<Outbox> outboxes = outboxRepository.findTop100ByTopicAndStatusOrderByCreatedAtAsc("order_accepted",OutboxStatus.READY);
         for(Outbox outbox : outboxes) {
             try {
-//                outboxProducer.produce(outbox.getEventId().toString(), outbox.getPayload());
-                outboxProducer.produceAcceptAndDelivery(outbox.getEventId().toString(), outbox.getOrderPayload(), outbox.getDeliveryPayload());
+                kafkaProducer.produce(outbox.getTopic(), outbox.getEventId().toString(), outbox.getPayload());
+                outbox.publishComplete();
+            } catch (Exception  e) {
+                outbox.publishFail();
+            }
+        }
+    }
+
+    @Transactional
+    public void prepareProduce() {
+        List<Outbox> outboxes = outboxRepository.findTop100ByTopicAndStatusOrderByCreatedAtAsc("order_prepared",OutboxStatus.READY);
+        for(Outbox outbox : outboxes) {
+            try {
+                kafkaProducer.produce(outbox.getTopic(), outbox.getEventId().toString(), outbox.getPayload());
                 outbox.publishComplete();
             } catch (Exception  e) {
                 outbox.publishFail();

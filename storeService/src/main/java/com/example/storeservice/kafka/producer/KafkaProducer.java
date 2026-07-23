@@ -17,11 +17,4 @@ public class KafkaProducer {
         kafkaTemplate.send(topic, key, message).get();
     }
 
-    public void produceAcceptAndDelivery(String topic1, String topic2, String key1, String key2, String payload1, String payload2) throws ExecutionException, InterruptedException {
-        kafkaTemplate.executeInTransaction(operations -> {
-            operations.send(topic1, key1, payload1);
-            operations.send(topic2, key2, payload2);
-            return true;
-        });
-    }
 }
