@@ -19,12 +19,17 @@ import java.util.UUID;
 public class OrderConsumer {
 
     private final OrderService orderService;
-    private final ObjectMapper objectMapper;
+    //private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = "order-accepted", groupId = "order-accepted")
-    public void consume(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
+    @KafkaListener(topics = "order_accepted")
+    public void orderAcceptConsume1(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
         log.info("consume key : {}, Payload : {}", eventId, payload);
         orderService.orderAccepted(UUID.fromString(eventId));
-        //log.info("order : {}", order);
+    }
+
+    @KafkaListener(topics = "order_prepared")
+    public void orderPreparedConsume2(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
+        log.info("consume key : {}, Payload : {}", eventId, payload);
+        orderService.orderPrepared(UUID.fromString(eventId));
     }
 }

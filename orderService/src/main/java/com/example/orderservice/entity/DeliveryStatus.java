@@ -6,6 +6,7 @@ public enum DeliveryStatus {
     ACCEPTED,
     REJECTED,
     CANCELED,
+    STORE_ARRIVED,
     DELIVERING,
     COMPLETED
 }
