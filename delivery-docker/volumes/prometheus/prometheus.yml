@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'kafka'
+    static_configs:
+      - targets:
+          - 172.35.0.11:7071
+          - 172.35.0.12:7071
+          - 172.35.0.13:7071
