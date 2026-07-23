@@ -1,4 +1,4 @@
-package com.example.deliveryservice.scheduler;
+package com.example.deliveryservice.scheduler.arrival;
 
 import com.example.deliveryservice.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DeliveryCompleteScheduler {
+public class StoreArrivalScheduler {
 
     private final DeliveryService deliveryService;
 
-    //@Scheduled(fixedDelay = 5000)
-    public void completeDeliveries() {
-        deliveryService.completeDeliveries();
+    @Scheduled(fixedDelay = 3000)
+    public void arrivedStore() {
+        deliveryService.arrivedStore();
     }
 }

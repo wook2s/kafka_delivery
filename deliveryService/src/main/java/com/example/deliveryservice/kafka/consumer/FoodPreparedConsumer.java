@@ -9,7 +9,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
@@ -18,17 +17,13 @@ import java.util.UUID;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DeliveryRequestConsumer {
+public class FoodPreparedConsumer {
 
-    private final ObjectMapper objectMapper;
     private final DeliveryService deliveryService;
 
-    @KafkaListener(topics = "order_accepted")
+    @KafkaListener(topics = "order_prepared")
     public void consumeDelivery(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String json) {
-        log.info("consume key : {}, json : {}", eventId, json);
-
-        DeliveryRequestPayload payload = objectMapper.readValue(json, DeliveryRequestPayload.class);
-        Delivery delivery = Delivery.createDeliveryFromPendingPayload(UUID.fromString(eventId), payload);
-        deliveryService.saveDelivery(delivery);
+        log.info("prepared food consume key : {}, json : {}", eventId, json);
+        deliveryService.makeFoodPrepared(UUID.fromString(eventId));
     }
 }

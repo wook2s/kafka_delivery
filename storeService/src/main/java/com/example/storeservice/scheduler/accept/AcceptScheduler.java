@@ -1,4 +1,4 @@
-package com.example.storeservice.scheduler;
+package com.example.storeservice.scheduler.accept;
 
 import com.example.storeservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class OrderAcceptScheduler {
+public class AcceptScheduler {
 
     private final OrderService orderService;
 

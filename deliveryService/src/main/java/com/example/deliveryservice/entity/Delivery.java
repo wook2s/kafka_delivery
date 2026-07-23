@@ -35,7 +35,11 @@ public class Delivery {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DeliveryStatus status;
+    private FoodStatus foodStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DeliveryStatus deliveryStatus;
 
     @OneToMany(
             mappedBy = "order",
@@ -67,7 +71,9 @@ public class Delivery {
         order.setUserId(payload.getUserId());
         order.setAddress(payload.getAddress());
         order.setStoreId(payload.getStoreId());
-        order.setStatus(DeliveryStatus.REQUESTED);
+
+        order.setFoodStatus(FoodStatus.WAITING);
+        order.setDeliveryStatus(DeliveryStatus.REQUESTED);
         order.setCreateId("DELIVERY_SERVICE");
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdateId("DELIVERY_SERVICE");
@@ -84,13 +90,25 @@ public class Delivery {
     }
 
     public void accepted() {
-        this.status = DeliveryStatus.ACCEPTED;
+        this.deliveryStatus = DeliveryStatus.ACCEPTED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "DELIVERY_SERVICE";
+    }
+
+    public void storeArrived() {
+        this.deliveryStatus = DeliveryStatus.STORE_ARRIVED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "DELIVERY_SERVICE";
+    }
+
+    public void deliveryStart() {
+        this.deliveryStatus = DeliveryStatus.DELIVERING;
         this.updatedAt = LocalDateTime.now();
         this.updateId = "DELIVERY_SERVICE";
     }
 
     public void completed() {
-        this.status = DeliveryStatus.COMPLETED;
+        this.deliveryStatus = DeliveryStatus.COMPLETED;
         this.updatedAt = LocalDateTime.now();
         this.updateId = "DELIVERY_SERVICE";
     }

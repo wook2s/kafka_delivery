@@ -1,4 +1,4 @@
-package com.example.deliveryservice.scheduler;
+package com.example.deliveryservice.scheduler.accept;
 
 import com.example.deliveryservice.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DeliveryAcceptScheduler {
+public class AcceptScheduler {
 
     private final DeliveryService deliveryService;
 

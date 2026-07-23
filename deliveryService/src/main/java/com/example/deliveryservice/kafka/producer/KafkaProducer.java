@@ -10,11 +10,10 @@ import java.util.concurrent.ExecutionException;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DeliveryCompleteProducer {
+public class KafkaProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final static String DELIVERY_COMPLETE_TOPIC = "delivery-completed";
 
-    public void produce(String key, String message) throws ExecutionException, InterruptedException {
-        kafkaTemplate.send(DELIVERY_COMPLETE_TOPIC, key, message).get();
+    public void produce(String topic, String key, String message) throws ExecutionException, InterruptedException {
+        kafkaTemplate.send(topic, key, message).get();
     }
 }

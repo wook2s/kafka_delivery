@@ -7,14 +7,14 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "outbox_accept")
+@Table(name = "outbox_events")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
-public class AcceptOutbox {
+public class Outbox {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,8 +22,11 @@ public class AcceptOutbox {
     @Column(nullable = false)
     private Long orderId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private UUID eventId;
+
+    @Column(nullable = false)
+    private String topic;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String payload;
@@ -44,21 +47,23 @@ public class AcceptOutbox {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static AcceptOutbox createOutbox(Delivery delivery, String payload) {
-        AcceptOutbox acceptOutbox = new AcceptOutbox();
-        acceptOutbox.setOrderId(delivery.getId());
-        acceptOutbox.setEventId(delivery.getEventId());
-        acceptOutbox.setStatus(OutboxStatus.READY);
-        acceptOutbox.setCreateId("STORE_SERVICE");
-        acceptOutbox.setCreatedAt(LocalDateTime.now());
-        acceptOutbox.setUpdateId("STORE_SERVICE");
-        acceptOutbox.setUpdatedAt(LocalDateTime.now());
-        acceptOutbox.setPayload(payload);
-        return acceptOutbox;
+    public static Outbox createOutbox(Delivery delivery, String topic,String payload) {
+        Outbox outbox = new Outbox();
+        outbox.setOrderId(delivery.getId());
+        outbox.setEventId(delivery.getEventId());
+        outbox.setTopic(topic);
+        outbox.setStatus(OutboxStatus.READY);
+        outbox.setCreateId("STORE_SERVICE");
+        outbox.setCreatedAt(LocalDateTime.now());
+        outbox.setUpdateId("STORE_SERVICE");
+        outbox.setUpdatedAt(LocalDateTime.now());
+        outbox.setPayload(payload);
+        return outbox;
     }
 
     public void publishComplete() {
         this.status = OutboxStatus.PUBLISHED;
+        this.updateId = "STORE_SERVICE";
         this.updatedAt = LocalDateTime.now();
     }
 
