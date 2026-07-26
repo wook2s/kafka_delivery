@@ -1,9 +1,7 @@
 package com.example.orderservice.entity;
 
-import com.example.orderservice.event.OrderCreatedPayload;
 import jakarta.persistence.*;
 import lombok.*;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,12 +24,21 @@ public class Outbox {
     @Column(nullable = false, unique = true)
     private UUID eventId;
 
+    @Column(nullable = false)
+    private String topic;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String payload;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OutboxStatus status;
+
+    @Column(nullable = false)
+    private int tryCnt = 0;
+
+    @Column
+    private String errorMsg;
 
     @Column(nullable = false)
     private String createId;
@@ -45,17 +52,20 @@ public class Outbox {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static Outbox createOutbox(Order order, String payload) {
+    public static Outbox createOutbox(Order order, String topic, String payload) {
         Outbox outbox = new Outbox();
+
         outbox.setOrderId(order.getId());
         outbox.setEventId(order.getEventId());
         outbox.setStatus(OutboxStatus.READY);
+
+        outbox.setTopic(topic);
+        outbox.setPayload(payload);
+
         outbox.setCreateId("ORDER_SERVICE");
         outbox.setCreatedAt(LocalDateTime.now());
         outbox.setUpdateId("ORDER_SERVICE");
         outbox.setUpdatedAt(LocalDateTime.now());
-
-        outbox.setPayload(payload);
 
         return outbox;
     }
@@ -68,5 +78,17 @@ public class Outbox {
 
     public void publishFail() {
         this.status = OutboxStatus.FAILED;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "ORDER_SERVICE";
+    }
+
+    public void publishTimeout() {
+        this.status = OutboxStatus.TIMEOUT;
+        this.updatedAt = LocalDateTime.now();
+        this.updateId = "ORDER_SERVICE";
+    }
+
+    public void increaseTryCnt() {
+        this.tryCnt ++;
     }
 }

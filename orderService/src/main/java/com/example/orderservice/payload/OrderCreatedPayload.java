@@ -1,4 +1,4 @@
-package com.example.orderservice.event;
+package com.example.orderservice.payload;
 
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.entity.OrderItem;

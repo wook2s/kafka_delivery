@@ -11,4 +11,6 @@ import java.util.List;
 public interface OutboxRepository extends JpaRepository<Outbox, Long> {
     List<Outbox> findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus status);
 
+    List<Outbox> findTop100ByStatusAndTryCntLessThanEqualOrderByCreatedAtAsc(OutboxStatus status,int retryCnt);
+
 }

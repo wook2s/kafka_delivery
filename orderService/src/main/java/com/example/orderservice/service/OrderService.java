@@ -3,7 +3,7 @@ package com.example.orderservice.service;
 import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.entity.Order;
 import com.example.orderservice.entity.Outbox;
-import com.example.orderservice.event.OrderCreatedPayload;
+import com.example.orderservice.payload.OrderCreatedPayload;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class OrderService {
         OrderCreatedPayload payload = OrderCreatedPayload.from(order);
         String jsonData = objectMapper.writeValueAsString(payload);
 
-        Outbox outbox = Outbox.createOutbox(savedOrder, jsonData);
+        Outbox outbox = Outbox.createOutbox(savedOrder, "order-requested", jsonData);
         outboxRepository.save(outbox);
 
         return savedOrder.getId();

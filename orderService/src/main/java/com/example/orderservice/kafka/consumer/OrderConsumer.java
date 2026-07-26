@@ -22,13 +22,13 @@ public class OrderConsumer {
     //private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "order_accepted")
-    public void orderAcceptConsume1(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
+    public void orderAccepted(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
         log.info("consume key : {}, Payload : {}", eventId, payload);
         orderService.orderAccepted(UUID.fromString(eventId));
     }
 
     @KafkaListener(topics = "order_prepared")
-    public void orderPreparedConsume2(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
+    public void orderPrepared(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String payload) {
         log.info("consume key : {}, Payload : {}", eventId, payload);
         orderService.orderPrepared(UUID.fromString(eventId));
     }
