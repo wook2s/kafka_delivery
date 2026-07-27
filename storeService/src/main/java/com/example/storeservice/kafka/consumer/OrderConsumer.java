@@ -23,7 +23,7 @@ public class OrderConsumer {
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
 
-    @KafkaListener(topics = "order-requested")
+    @KafkaListener(topics = "order_requested")
     public void orderRequested(@Header(KafkaHeaders.RECEIVED_KEY) String eventId, @Payload String json) {
         log.info("consume key : {}, json : {}", eventId, json);
 
