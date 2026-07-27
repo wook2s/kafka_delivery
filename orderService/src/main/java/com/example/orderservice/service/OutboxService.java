@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,24 +26,27 @@ public class OutboxService {
     }
 
     @Transactional
-    public void publishComplete(Long id) {
-        Outbox outbox = outboxRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Outbox not found : " + id));
-        outbox.publishComplete();
-        outbox.increaseTryCnt();
+    public void publishComplete(UUID eventId) {
+        int updated = outboxRepository.updateStatusAndTryCntByEventId(eventId, OutboxStatus.PUBLISHED);
+        if (updated == 0) {
+            throw new IllegalArgumentException("outbox not found : " + eventId);
+        }
     }
 
     @Transactional
-    public void publishTimeout(Long id, String message) {
-        Outbox outbox = outboxRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Outbox not found : " + id));
-        outbox.publishTimeout();
-        outbox.increaseTryCnt();
+    public void publishTimeout(UUID eventId, String errorMsg) {
+        int updated = outboxRepository.updateStatusAndTryCntAndErrorMsgByEventId(eventId, OutboxStatus.TIMEOUT, errorMsg);
+        if (updated == 0) {
+            throw new IllegalArgumentException("outbox not found : " + eventId);
+        }
     }
 
     @Transactional
-    public void publishFail(Long id, String message) {
-        Outbox outbox = outboxRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Outbox not found : " + id));
-        outbox.publishFail();
-        outbox.increaseTryCnt();
+    public void publishFail(UUID eventId, String errorMsg) {
+        int updated = outboxRepository.updateStatusAndTryCntAndErrorMsgByEventId(eventId, OutboxStatus.FAILED, errorMsg);
+        if (updated == 0) {
+            throw new IllegalArgumentException("outbox not found : " + eventId);
+        }
     }
 
     @Transactional(readOnly = true)

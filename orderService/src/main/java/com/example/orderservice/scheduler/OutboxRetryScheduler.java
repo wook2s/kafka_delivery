@@ -27,12 +27,12 @@ public class OutboxRetryScheduler {
                     .orTimeout(5, TimeUnit.SECONDS)
                     .whenComplete((result, ex) -> {
                         if(ex == null) {
-                            outboxService.publishComplete(outbox.getId());
+                            outboxService.publishComplete(outbox.getEventId());
                         } else {
                             if(ex instanceof TimeoutException) {
-                                outboxService.publishTimeout(outbox.getId(), ex.getMessage());
+                                outboxService.publishTimeout(outbox.getEventId(), ex.getMessage());
                             } else {
-                                outboxService.publishFail(outbox.getId(), ex.getMessage());
+                                outboxService.publishFail(outbox.getEventId(), ex.getMessage());
                             }
                         }
                     });

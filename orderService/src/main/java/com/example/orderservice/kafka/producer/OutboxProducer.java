@@ -1,5 +1,6 @@
 package com.example.orderservice.kafka.producer;
 
+import com.example.orderservice.entity.Outbox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -15,5 +16,9 @@ public class OutboxProducer {
 
     public CompletableFuture<SendResult<String, String>> produce(String topic, String key, String message) {
         return kafkaTemplate.send(topic, key, message);
+    }
+
+    public CompletableFuture<SendResult<String, String>> produce(Outbox outbox) {
+        return kafkaTemplate.send(outbox.getTopic(), outbox.getEventId().toString(), outbox.getPayload());
     }
 }

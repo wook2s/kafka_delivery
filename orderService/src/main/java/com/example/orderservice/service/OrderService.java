@@ -1,7 +1,9 @@
 package com.example.orderservice.service;
 
 import com.example.orderservice.dto.OrderRequestDTO;
+import com.example.orderservice.entity.DeliveryStatus;
 import com.example.orderservice.entity.Order;
+import com.example.orderservice.entity.OrderStatus;
 import com.example.orderservice.entity.Outbox;
 import com.example.orderservice.payload.OrderCreatedPayload;
 import com.example.orderservice.repository.OrderRepository;
@@ -31,7 +33,7 @@ public class OrderService {
         OrderCreatedPayload payload = OrderCreatedPayload.from(order);
         String jsonData = objectMapper.writeValueAsString(payload);
 
-        Outbox outbox = Outbox.createOutbox(savedOrder, "order-requested", jsonData);
+        Outbox outbox = Outbox.createOutbox(savedOrder, "order_requested", jsonData);
         outboxRepository.save(outbox);
 
         return savedOrder.getId();
@@ -39,27 +41,46 @@ public class OrderService {
 
     @Transactional
     public void orderAccepted(UUID eventId) {
-        Order order = orderRepository.findByEventId(eventId);
-        order.accepted();
+//        orderRepository.findByEventId(eventId).accepted();
+        int cnt = orderRepository.updateStatusByEventId(eventId, OrderStatus.ACCEPTED);
+        if(cnt == 0) {
+            throw new IllegalArgumentException("order not found : " + eventId.toString());
+        }
     }
 
     @Transactional
     public void orderPrepared(UUID eventId) {
-        orderRepository.findByEventId(eventId).prepared();
+//        orderRepository.findByEventId(eventId).prepared();
+        int cnt = orderRepository.updateStatusByEventId(eventId, OrderStatus.PREPARED);
+        if(cnt == 0) {
+            throw new IllegalArgumentException("order not found : " + eventId.toString());
+        }
     }
 
     @Transactional
     public void deliveryStoreArrived(UUID eventId) {
-        orderRepository.findByEventId(eventId).deliveryStoreArrived();
+//        orderRepository.findByEventId(eventId).deliveryStoreArrived();
+        int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.STORE_ARRIVED);
+        if(cnt == 0) {
+            throw new IllegalArgumentException("order not found : " + eventId.toString());
+        }
     }
 
     @Transactional
-    public void deliveryStarted(UUID uuid) {
-        orderRepository.findByEventId(uuid).deliveryStarted();
+    public void deliveryStarted(UUID eventId) {
+//        orderRepository.findByEventId(uuid).deliveryStarted();
+        int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.DELIVERING);
+        if(cnt == 0) {
+            throw new IllegalArgumentException("order not found : " + eventId.toString());
+        }
     }
 
     @Transactional
-    public void deliveryCompleted(UUID uuid) {
-        orderRepository.findByEventId(uuid).completed();
+    public void deliveryCompleted(UUID eventId) {
+//        orderRepository.findByEventId(eventId).completed();
+        int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.COMPLETED);
+        if(cnt == 0) {
+            throw new IllegalArgumentException("order not found : " + eventId.toString());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.orderservice.entity;
 
 import com.example.orderservice.dto.OrderRequestDTO;
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -71,7 +72,8 @@ public class Order {
 
     public static Order createOrder(OrderRequestDTO dto) {
         Order order = new Order();
-        order.setEventId(UUID.randomUUID());
+//        order.setEventId(UUID.randomUUID());
+        order.setEventId(UuidCreator.getTimeOrderedEpoch());
         order.setUserId(dto.getUserId());
         order.setAddress(dto.getAddress());
         order.setStoreId(dto.getStoreId());
