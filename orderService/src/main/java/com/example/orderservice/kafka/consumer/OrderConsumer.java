@@ -1,6 +1,7 @@
 package com.example.orderservice.kafka.consumer;
 
 import com.example.orderservice.entity.Order;
+import com.example.orderservice.entity.OrderStatus;
 import com.example.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,11 @@ public class OrderConsumer {
     @KafkaListener(topics = "order_accepted", concurrency = "3")
     public void orderAccepted(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         try {
-            for (ConsumerRecord<String, String> record : records) {
-                orderService.orderAccepted(UUID.fromString(record.key()));
-            }
+            List<UUID> eventIds = records.stream().map(record -> UUID.fromString(record.key())).toList();
+            orderService.updateOrderStatusBatch(eventIds, OrderStatus.ACCEPTED);
             ack.acknowledge();
         } catch (Exception e) {
+            log.error("order accepted processing failed", e);
             throw e;
         }
     }
@@ -38,11 +39,11 @@ public class OrderConsumer {
     @KafkaListener(topics = "order_prepared", concurrency = "3")
     public void orderPrepared(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         try {
-            for (ConsumerRecord<String, String> record : records) {
-                orderService.orderPrepared(UUID.fromString(record.key()));
-            }
+            List<UUID> eventIds = records.stream().map(record -> UUID.fromString(record.key())).toList();
+            orderService.updateOrderStatusBatch(eventIds, OrderStatus.PREPARED);
             ack.acknowledge();
         } catch (Exception e) {
+            log.error("order prepared processing failed", e);
             throw e;
         }
     }

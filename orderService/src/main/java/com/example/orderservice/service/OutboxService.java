@@ -1,6 +1,5 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.entity.OrderStatus;
 import com.example.orderservice.entity.Outbox;
 import com.example.orderservice.entity.OutboxStatus;
 import com.example.orderservice.repository.OutboxRepository;

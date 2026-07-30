@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OutboxRepository outboxRepository;
     private final ObjectMapper objectMapper;
+
 
     @Transactional
     public Long createOrder(OrderRequestDTO orderDTO) {
@@ -40,8 +42,17 @@ public class OrderService {
     }
 
     @Transactional
+    public void updateOrderStatusBatch(List<UUID> eventIds, OrderStatus orderStatus) {
+        int cnt = orderRepository.updateStatusByEventIds(eventIds, orderStatus);
+    }
+
+    @Transactional
+    public void updateDeliveryStatusBatch(List<UUID> eventIds, DeliveryStatus deliveryStatus) {
+        int cnt = orderRepository.updateDeliveryStatusByEventIds(eventIds, deliveryStatus);
+    }
+
+    @Transactional
     public void orderAccepted(UUID eventId) {
-//        orderRepository.findByEventId(eventId).accepted();
         int cnt = orderRepository.updateStatusByEventId(eventId, OrderStatus.ACCEPTED);
         if(cnt == 0) {
             throw new IllegalArgumentException("order not found : " + eventId.toString());
@@ -50,7 +61,6 @@ public class OrderService {
 
     @Transactional
     public void orderPrepared(UUID eventId) {
-//        orderRepository.findByEventId(eventId).prepared();
         int cnt = orderRepository.updateStatusByEventId(eventId, OrderStatus.PREPARED);
         if(cnt == 0) {
             throw new IllegalArgumentException("order not found : " + eventId.toString());
@@ -59,7 +69,6 @@ public class OrderService {
 
     @Transactional
     public void deliveryStoreArrived(UUID eventId) {
-//        orderRepository.findByEventId(eventId).deliveryStoreArrived();
         int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.STORE_ARRIVED);
         if(cnt == 0) {
             throw new IllegalArgumentException("order not found : " + eventId.toString());
@@ -68,7 +77,6 @@ public class OrderService {
 
     @Transactional
     public void deliveryStarted(UUID eventId) {
-//        orderRepository.findByEventId(uuid).deliveryStarted();
         int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.DELIVERING);
         if(cnt == 0) {
             throw new IllegalArgumentException("order not found : " + eventId.toString());
@@ -77,7 +85,6 @@ public class OrderService {
 
     @Transactional
     public void deliveryCompleted(UUID eventId) {
-//        orderRepository.findByEventId(eventId).completed();
         int cnt = orderRepository.updateDeliveryStatusByEventId(eventId, DeliveryStatus.COMPLETED);
         if(cnt == 0) {
             throw new IllegalArgumentException("order not found : " + eventId.toString());

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.orderservice.mapper.OrderMapper">
+
+    <update id="updateStatusByEventId">
+        UPDATE
+            orders
+        SET
+            status = #{status}
+        WHERE
+            event_id = #{eventId}
+    </update>
+
+    <update id="updateDeliveryStatusByEventId">
+        UPDATE
+            orders
+        SET
+            delivery_status = #{deliveryStatus}
+        WHERE
+            event_id = #{eventId}
+    </update>
+
+</mapper>

@@ -1,5 +1,7 @@
 package com.example.orderservice.kafka.consumer;
 
+import com.example.orderservice.entity.DeliveryStatus;
+import com.example.orderservice.entity.OrderStatus;
 import com.example.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +26,12 @@ public class DeliveryConsumer {
     @KafkaListener(topics = "delivery_store_arrived", concurrency = "3")
     public void deliveryStoreArrived(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         try {
-            for (ConsumerRecord<String, String> record : records) {
-                orderService.deliveryStoreArrived(UUID.fromString(record.key()));
-            }
+            List<UUID> eventIds = records.stream().map(record -> UUID.fromString(record.key())).toList();
+            orderService.updateDeliveryStatusBatch(eventIds, DeliveryStatus.STORE_ARRIVED);
             ack.acknowledge();
 
         } catch (Exception e) {
+            log.error("delivery store arrived processing failed", e);
             throw e;
         }
     }
@@ -37,11 +39,11 @@ public class DeliveryConsumer {
     @KafkaListener(topics = "delivery_started", concurrency = "3")
     public void deliveryStarted(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         try {
-            for (ConsumerRecord<String, String> record : records) {
-                orderService.deliveryStarted(UUID.fromString(record.key()));
-            }
+            List<UUID> eventIds = records.stream().map(record -> UUID.fromString(record.key())).toList();
+            orderService.updateDeliveryStatusBatch(eventIds, DeliveryStatus.DELIVERING);
             ack.acknowledge();
         } catch (Exception e) {
+            log.error("delivery started processing failed", e);
             throw e;
         }
     }
@@ -49,12 +51,11 @@ public class DeliveryConsumer {
     @KafkaListener(topics = "delivery_completed", concurrency = "3")
     public void deliveryCompleted(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         try {
-            for (ConsumerRecord<String, String> record : records) {
-                UUID eventId = UUID.fromString(record.key());
-                orderService.deliveryCompleted(eventId);
-            }
+            List<UUID> eventIds = records.stream().map(record -> UUID.fromString(record.key())).toList();
+            orderService.updateDeliveryStatusBatch(eventIds, DeliveryStatus.COMPLETED);
             ack.acknowledge();
         } catch (Exception e) {
+            log.error("delivery completed processing failed", e);
             throw e;
         }
     }
