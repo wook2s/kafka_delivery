@@ -17,6 +17,8 @@ public interface OutboxRepository extends JpaRepository<Outbox, Long> {
 
     List<Outbox> findTop100ByStatusAndTryCntLessThanEqualOrderByCreatedAtAsc(OutboxStatus status,int retryCnt);
 
+    Outbox findByEventId(UUID eventId);
+
     @Modifying
     @Query("""
         update Outbox o
